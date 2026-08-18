@@ -74,7 +74,7 @@ namespace LSTM {
             vfloat32m1_t v_out = __riscv_vle32_v_f32m1(&out[j], vl);
             vfloat32m1_t v_w   = __riscv_vle32_v_f32m1(&row_i[j], vl);
 
-            // ضرب وتجميع بـ RVV: v_out += x_i * v_w
+            
             v_out = __riscv_vfmacc_vf_f32m1(v_out, x_i, v_w, vl);
 
             __riscv_vse32_v_f32m1(&out[j], v_out, vl);
