@@ -17,7 +17,7 @@ int main(){
     size_t sequence_len = 10;
 
     //Load weights
-    std::string weights_path = "../model_weights/lstm_signal_weights.bin";
+    std::string weights_path = "model_weights/lstm_signal_weights.bin";
 
     std::vector<float> weights_buf = LSTM::load_binary_weights(weights_path);
 

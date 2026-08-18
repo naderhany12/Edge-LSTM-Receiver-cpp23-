@@ -22,3 +22,6 @@ __pycache__/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Ignore all build directories
+build*/
