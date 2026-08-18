@@ -16,56 +16,7 @@
 
 namespace LSTM {
 
-
-inline float dot_product(std::span<const float> a, std::span<const float> b){
-    if(a.size() != b.size()){
-        throw std::runtime_error("Dot Product: Vectors must have the same size!");
-    }
-
-    size_t n = a.size();
-
-#if defined(__riscv) && defined(__riscv_vector)
-
-    size_t v1;
-
-    v1 =__riscv_vsetvl_e32m1(n);
-    vfloat32m1_t v_acc = __riscv_vfmv_v_f_f32m1(0.0f, v1);
-
-    size_t i = 0;
-// strip-mining loop
-    while(n > 0){
-        v1 = __riscv_vsetvl_e32m1(n);
-
-        vfloat32m1_t va = __riscv_vle32_v_f32m1(&a[i] , v1);
-        vfloat32m1_t vb = __riscv_vle32_v_f32m1(&b[i] , v1);
-
-        v_acc = __riscv_vfmacc_vv_f32m1(v_acc, va, vb, v1);
-
-
-        i += v1;
-        n -= v1;
-
-    }
-
-    // Vector Reduction
-    vfloat32m1_t v_zero = __riscv_vfmv_v_f_f32m1(0.0f, 1);
-    vfloat32m1_t v_sum = __riscv_vfredusum_vs_f32m1_f32m1(v_acc, v_zero,  __riscv_vsetvl_e32m1(a.size()));
-
-    return __riscv_vfmv_f_s_f32m1_f32(v_sum);
-
-#else
-
-    float sum = 0.0f;
-    for(size_t i = 0; i < n; i++)
-        sum += a[i] * b[i];
-    return sum;
-
-#endif
-
-}
-
-
-    class TensorView2D{
+  class TensorView2D{
     private:
         std::span<const float> data_;
         size_t rows_;
@@ -93,20 +44,50 @@ inline float dot_product(std::span<const float> a, std::span<const float> b){
 
     };
 
-    inline void matmul_vec(TensorView2D mat, std::span<const float> x, std::span<const float> bias, std::span<float> out){
-        if(x.size() != mat.cols() || out.size() != mat.rows()){
+    inline void matmul_vec(TensorView2D& mat, std::span<const float> x, std::span<const float> bias, std::span<float> out){
+
+        size_t in_dim = mat.rows();
+        size_t out_dim = mat.cols();
+
+        if(x.size() != in_dim || out.size() != out_dim){
             std::string err = "Matrix-Vector dimension mismatch! x.size=" + std::to_string(x.size()) +
-                          ", mat.cols=" + std::to_string(mat.cols()) +
+                          ", mat.rows=" + std::to_string(in_dim) +
                           ", out.size=" + std::to_string(out.size()) +
-                          ", mat.rows=" + std::to_string(mat.rows());
+                          ", mat.cols=" + std::to_string(out_dim);
              throw std::invalid_argument(err);
             }
 
-        for(size_t r = 0; r < mat.rows(); r++){
-            float b = bias.empty() ? 0.0f : bias[r];
-            out[r] = dot_product(mat.row(r), x) + b;
-
+        for (size_t j = 0; j < out_dim; ++j) {
+            out[j] = bias.empty() ? 0.0f : bias[j];
+            
         }
+
+        for (size_t i = 0; i < in_dim; ++i) {
+        float x_i = x[i];
+        std::span<const float> row_i = mat.row(i);
+
+#if defined(__riscv) && defined(__riscv_vector)
+        size_t n = out_dim;
+        size_t j = 0;
+        while (n > 0) {
+            size_t vl = __riscv_vsetvl_e32m1(n);
+            vfloat32m1_t v_out = __riscv_vle32_v_f32m1(&out[j], vl);
+            vfloat32m1_t v_w   = __riscv_vle32_v_f32m1(&row_i[j], vl);
+
+            // ضرب وتجميع بـ RVV: v_out += x_i * v_w
+            v_out = __riscv_vfmacc_vf_f32m1(v_out, x_i, v_w, vl);
+
+            __riscv_vse32_v_f32m1(&out[j], v_out, vl);
+
+            j += vl;
+            n -= vl;
+        }
+        #else
+        for (size_t j = 0; j < out_dim; ++j) {
+            out[j] += x_i * row_i[j];
+        }
+        #endif
+    }
 
     }
 

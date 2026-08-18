@@ -76,7 +76,7 @@ int main(){
 
     std::vector<float> final_logits(input_dim, 0.0f);
 
-    LSTM::TensorView2D dense_view(W_dense, input_dim, hidden_dim);
+    LSTM::TensorView2D dense_view(W_dense, hidden_dim, input_dim);
     LSTM::matmul_vec(dense_view, h,b_dense, final_logits);
 
     
