@@ -89,3 +89,30 @@ Decoded Bits (>0) : [0 0 1 1]
 Raw Output Logits : -0.236075 -7.46501 0.888805 1.50091 
 Decoded Bits (>0) : 0 0 1 1 
 Status            : 100% Bit-Accurate Verification Success.
+
+### 📁 Repository Structure
+Edge-LSTM-Receiver-cpp23/
+├── cmake/
+│   └── riscv64-toolchain.cmake     # CMake cross-compilation toolchain
+├── include/
+│   └── LSTM/
+│       ├── activations.hpp         # Fast activation functions (Sigmoid, Tanh)
+│       ├── lstm_cell.hpp           # Zero-allocation LSTM Cell implementation
+│       ├── tensor_view.hpp         # Non-owning 2D span views & RVV GEMV kernels
+│       └── utils.hpp               # Binary weight loading utilities
+├── model_weights/
+│   └── lstm_signal_weights.bin     # Exported float32 model parameters
+├── python/
+│   ├── evaluate_receiver.py        # Python verification & Golden Reference test
+│   ├── export_weights.py           # Weight extraction script
+│   ├── models.py                   # TensorFlow/Keras reference model
+│   └── train_receiver.py           # Neural receiver training pipeline
+├── scripts/
+│   └── run_optimization_sweep.sh  # Automated benchmarking script (-O0 to -Ofast)
+├── src/
+│   └── main.cpp                    # Pure inference benchmark driver
+├── tests/
+│   └── test_lstm_forward.cpp       # Unit test validating numerical tolerance
+├── CMakeLists.txt                  # Root build configuration
+├── LICENSE                         # MIT License
+└── README.md                       # Architectural documentation
