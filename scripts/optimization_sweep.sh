@@ -14,7 +14,7 @@ YELLOW='\033[1;33m'
 OPTIMIZATION_FLAGS=( "-O0" "-O2" "-O3" "-Os" "-Ofast")
 TOOLCHAIN_FILE="cmake/riscv64-toolchain.cmake"
 REPORT_DIR="reports"
-REPORT_FILE="${REPORT_DIR}/optimization_sweep.txt"
+REPORT_FILE="${REPORT_DIR}/rvv_optimization_sweep.txt"
 
 echo -e "${CYAN}   Starting RISC-V Compiler Optimization Sweep      ${NC}"
 echo -e "${CYAN}   -----------------------------------------------${NC}"

@@ -20,7 +20,7 @@ namespace LSTM {
         LSTMCell(size_t input_dim, size_t hidden_dim, 
             std::span<const float> W_ih, std::span<const float> W_hh, std::span<const float> bias) :
             input_dim_(input_dim), hidden_dim_(hidden_dim),
-            W_ih_(W_ih, input_dim, 4 * hidden_dim), W_hh_(W_hh, hidden_dim, 4 * hidden_dim),
+            W_ih_(W_ih, 4 * hidden_dim, input_dim), W_hh_(W_hh, 4 * hidden_dim, hidden_dim),
             bias_(bias), gates_buf_(4 * hidden_dim), gates_hh_buf_(4 * hidden_dim)
         {}
 
