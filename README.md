@@ -104,18 +104,29 @@ Status            : 100% Bit-Accurate Verification Success.
 ```text
 Edge-LSTM-Receiver-cpp23/
 ├── cmake/
-│   └── riscv64-toolchain.cmake     # CMake Toolchain file for RISC-V Cross-Compilation
+│   └── riscv64-toolchain.cmake     # CMake Toolchain configuration for RISC-V Cross-Compilation
+├── include/LSTM/
+│   ├── activations.hpp             # Zero-allocation Activation Functions (Sigmoid, Tanh)
+│   ├── lstm_cell.hpp               # Bare-Metal C++23 LSTM Cell Engine & Layer Execution
+│   ├── tensor_view.hpp             # Lightweight zero-copy std::span Tensor abstraction
+│   └── utils.hpp                   # Helper utilities for data loading and memory operations
 ├── model_weights/
-│   └── lstm_signal_weights.bin     # Exported float32 binary weights from Python Golden Model
-├── python_reference/
-│   └── train_and_export.py         # Keras/TensorFlow model training & weight dumper
-├── include/
-│   ├── lstm_layer.hpp              # Bare-Metal LSTM Cell & Layer C++23 Implementations
-│   ├── dense_layer.hpp             # Zero-allocation Dense Readout Layer
-│   └── rvv_math.hpp                # Hand-crafted RISC-V Vector Intrinsics (RVV 1.0)
+│   └── lstm_signal_weights.bin     # Exported float32 binary weights from Golden Model
+├── python/
+│   ├── evaluate_receiver.py        # Python script for BER and accuracy testing
+│   ├── export_weights.py           # Dumps Keras model weights to float32 binary format
+│   ├── models.py                   # Keras Autoencoder, Receiver, and Channel definitions
+│   └── train_autoencoder.py        # End-to-end Autoencoder training pipeline
+├── reports/
+│   └── rvv_optimization_sweep.txt  # Compiler optimization sweep logs & SIMD performance matrix
+├── scripts/
+│   └── optimization_sweep.sh       # Automated bash script for running compiler benchmarks
 ├── src/
-│   └── main.cpp                    # Pure Inference Benchmarking Engine
+│   └── main.cpp                    # Pure Edge Inference Performance Benchmarking Engine
 ├── tests/
-│   └── test_lstm_forward.cpp       # Unit test verifying bit-exact Golden Model output
-├── CMakeLists.txt                  # Build System Configuration
-└── README.md                       # Project Documentation
+│   ├── CMakeLists.txt              # Unit test build system rules
+│   └── test_lstm_forward.cpp       # Bit-exact validation against Python reference outputs
+├── .gitignore                      # Git ignore rules for build artifacts and binaries
+├── CMakeLists.txt                  # Root CMake Build System Configuration
+├── LICENSE                         # Project License Terms
+└── README.md                       # Complete System Architecture & Documentation
