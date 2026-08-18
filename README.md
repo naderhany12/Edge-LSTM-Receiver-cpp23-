@@ -42,7 +42,7 @@ An ultra-low latency, zero-allocation C++23 Neural Network Inference Engine opti
 
 ---
 
-## Optimization & Benchmarking Sweep Matrix
+## 📊 Optimization & Benchmarking Sweep Matrix
 
 Engineers often evaluate compiler flag efficiency vs hardware SIMD gains. Below is the multi-level optimization sweep performed via `riscv64-linux-gnu-g++` cross-compiler under QEMU emulation:
 
