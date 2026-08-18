@@ -10,10 +10,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include_directories(include)
 
-if(MSVC)
-    add_compile_options(/W4 /O2)
-else()
-    add_compile_options(-Wall -Wextra -O2)
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CXX_FLAGS)
+  set(CMAKE_CXX_FLAGS "-O3")
 endif()
 
 add_executable(LSTM_Edge_Inference src/main.cpp)
