@@ -66,21 +66,28 @@ Engineers often evaluate compiler flag efficiency vs hardware SIMD gains. Below 
 * RISC-V 64-bit GNU Toolchain (`riscv64-linux-gnu-g++`)
 * QEMU RISC-V Emulator (`qemu-riscv64`)
 
-### 1. Build the Engine for RISC-V
+### 1. Run Automated Multi-Flag Optimization Sweep
+Execute the automated benchmarking suite to compile across all optimization levels (`-O0`, `-O2`, `-O3`, `-Os`, `-Ofast`), measure binary footprint, and benchmark inference latencies:
 ```bash
-cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=cmake/riscv64-toolchain.cmake -DCMAKE_CXX_FLAGS="-O2"
-cmake --build build
+chmod +x scripts/run_optimization_sweep.sh
+./scripts/run_optimization_sweep.sh
 ```
 ### 2. Run Numerical Accuracy Unit Test
 ```bash
+cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=cmake/riscv64-toolchain.cmake -DCMAKE_CXX_FLAGS="-O2"
+cmake --build build --target test_lstm_forward
 qemu-riscv64 -L /usr/riscv64-linux-gnu -cpu max build/tests/test_lstm_forward
 ```
+‏
+Expected Output:
 Verifying LSTM Forward Propagation
 [PASS] Test Succeeded! Output matches Python Golden Reference.
 
 ### 3. Run Pure Inference Performance Engine
+```bash
+cmake --build build --target LSTM_Edge_Inference
 qemu-riscv64 -L /usr/riscv64-linux-gnu -cpu max build/LSTM_Edge_Inference
-
+```
 === Python Keras Reference Output ===
 Raw Output Logits : [-0.23607 -7.46501  0.88881  1.50091]
 Decoded Bits (>0) : [0 0 1 1]
