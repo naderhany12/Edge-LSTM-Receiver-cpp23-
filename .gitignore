@@ -1,0 +1,24 @@
+# C++ / CMake Build Outputs
+
+build/
+bin/
+out/
+*.exe
+*.o
+*.obj
+
+ 
+#Python Virtual Environment & Caches
+
+.venv/
+venv/
+ENV/
+__pycache__/
+*.pyc
+
+# IDE & System Files
+
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
