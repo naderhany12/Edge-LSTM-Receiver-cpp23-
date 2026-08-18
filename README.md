@@ -90,29 +90,25 @@ Raw Output Logits : -0.236075 -7.46501 0.888805 1.50091
 Decoded Bits (>0) : 0 0 1 1 
 Status            : 100% Bit-Accurate Verification Success.
 
-### 📁 Repository Structure
+---
+
+## 📁 Repository Structure
+
+```text
 Edge-LSTM-Receiver-cpp23/
 ├── cmake/
-│   └── riscv64-toolchain.cmake     # CMake cross-compilation toolchain
-├── include/
-│   └── LSTM/
-│       ├── activations.hpp         # Fast activation functions (Sigmoid, Tanh)
-│       ├── lstm_cell.hpp           # Zero-allocation LSTM Cell implementation
-│       ├── tensor_view.hpp         # Non-owning 2D span views & RVV GEMV kernels
-│       └── utils.hpp               # Binary weight loading utilities
+│   └── riscv64-toolchain.cmake     # CMake Toolchain file for RISC-V Cross-Compilation
 ├── model_weights/
-│   └── lstm_signal_weights.bin     # Exported float32 model parameters
-├── python/
-│   ├── evaluate_receiver.py        # Python verification & Golden Reference test
-│   ├── export_weights.py           # Weight extraction script
-│   ├── models.py                   # TensorFlow/Keras reference model
-│   └── train_receiver.py           # Neural receiver training pipeline
-├── scripts/
-│   └── run_optimization_sweep.sh  # Automated benchmarking script (-O0 to -Ofast)
+│   └── lstm_signal_weights.bin     # Exported float32 binary weights from Python Golden Model
+├── python_reference/
+│   └── train_and_export.py         # Keras/TensorFlow model training & weight dumper
+├── include/
+│   ├── lstm_layer.hpp              # Bare-Metal LSTM Cell & Layer C++23 Implementations
+│   ├── dense_layer.hpp             # Zero-allocation Dense Readout Layer
+│   └── rvv_math.hpp                # Hand-crafted RISC-V Vector Intrinsics (RVV 1.0)
 ├── src/
-│   └── main.cpp                    # Pure inference benchmark driver
+│   └── main.cpp                    # Pure Inference Benchmarking Engine
 ├── tests/
-│   └── test_lstm_forward.cpp       # Unit test validating numerical tolerance
-├── CMakeLists.txt                  # Root build configuration
-├── LICENSE                         # MIT License
-└── README.md                       # Architectural documentation
+│   └── test_lstm_forward.cpp       # Unit test verifying bit-exact Golden Model output
+├── CMakeLists.txt                  # Build System Configuration
+└── README.md                       # Project Documentation
