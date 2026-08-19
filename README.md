@@ -69,14 +69,13 @@ Engineers often evaluate compiler flag efficiency vs hardware SIMD gains. Below 
 ### 1. Run Automated Multi-Flag Optimization Sweep
 Execute the automated benchmarking suite to compile across all optimization levels (`-O0`, `-O2`, `-O3`, `-Os`, `-Ofast`), measure binary footprint, and benchmark inference latencies:
 ```bash
-chmod +x scripts/run_optimization_sweep.sh
-./scripts/run_optimization_sweep.sh
+chmod +x scripts/optimization_sweep.sh
+./scripts/optimization_sweep.sh
 ```
 ### 2. Run Numerical Accuracy Unit Test
 ```bash
-cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=cmake/riscv64-toolchain.cmake -DCMAKE_CXX_FLAGS="-O2"
-cmake --build build --target test_lstm_forward
-qemu-riscv64 -L /usr/riscv64-linux-gnu -cpu max build/tests/test_lstm_forward
+cmake --build build_test_rvv
+qemu-riscv64 -L /usr/riscv64-linux-gnu -cpu max build_test_rvv/tests/test_lstm_forward
 ```
 ‏
 Expected Output:
