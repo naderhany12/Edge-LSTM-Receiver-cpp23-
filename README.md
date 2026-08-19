@@ -30,13 +30,13 @@ An ultra-low latency, zero-allocation C++23 Neural Network Inference Engine opti
 
 ## 📐 System Architecture & Dataflow
 
-#  System Architecture
+###  System Architecture
 
 * **End-to-End Neural Autoencoder:** The system operates on a complete AI-driven autoencoder architecture, where the transmitter utilizes a neural model for signal encoding, and the receiver is powered by an optimized **LSTM network** for demodulation.
 * **Universal Hardware Adaptation:** Achieves a **0.1% Bit Error Rate (BER)**. The LSTM receiver easily adapts to unseen or varying transmitter profiles via lightweight **fine-tuning**, eliminating the need for dynamic hardware re-configurations.
 
 
-# Dataflow
+### Dataflow
 ```text
    [ Raw Input Signal ] (Sequence Len = 10, Features = 4)
             │
@@ -69,7 +69,7 @@ Engineers often evaluate compiler flag efficiency vs hardware SIMD gains. Below 
 | **`-Os`** | 7.35 KB / 908 us | 8.4 KB / 1322 us | 8.7 KB / 1508 us * | Space-Constrained Embedded |
 | **`-Ofast`** | 10.3 KB / 1368 us | 9.9 KB / 1146 us | 10 KB / 1534 us * | Aggressive Math / Lowest Latency |
 
-** Key Takeaways for README: **
+### Key Takeaways for README
 * **Best Overall Performance (RVV FP32):** `-Ofast` with RVV FP32 yields the overall lowest latency at 1146 us.
 * **Best Code Size & Scalar Latency (-Os):** The scalar engine achieves its peak performance at -Os (7.35 KB binary size and 908 us latency).
 * **FP16 / Zvfh Emulation Overhead:** Moving to FP16 reduces precision but incurs higher latency across -O3, -Os, and -Ofast due to runtime instruction casting and disassembly overheads during QEMU vector emulation.
