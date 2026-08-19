@@ -16,7 +16,7 @@ int main(){
     //Load weights
     std::string weights_path = "model_weights/lstm_signal_weights.bin";
     
-    std::vector<float> weights_buf = LSTM::load_binary_weights(weights_path);
+    std::vector<_Float16> weights_buf = LSTM::load_binary_weights_fp16(weights_path);
 
     if(weights_buf.empty()){
         std::cout << "[ERROR] Failed to load weights from file: " << weights_path << std::endl;
@@ -30,28 +30,28 @@ int main(){
     size_t dense_b_size = input_dim;
 
 
-    const float* weights_ptr = weights_buf.data();
-    std::span<const float> w_ih(weights_ptr, w_ih_size); weights_ptr += w_ih_size;
-    std::span<const float> w_hh(weights_ptr, w_hh_size); weights_ptr += w_hh_size;
-    std::span<const float> bias_lstm(weights_ptr, bias_size); weights_ptr += bias_size;
-    std::span<const float> W_dense(weights_ptr, dense_w_size); weights_ptr += dense_w_size;
-    std::span<const float> b_dense(weights_ptr, dense_b_size); weights_ptr += dense_b_size; 
+    const _Float16* weights_ptr = weights_buf.data();
+    std::span<const _Float16> w_ih(weights_ptr, w_ih_size); weights_ptr += w_ih_size;
+    std::span<const _Float16> w_hh(weights_ptr, w_hh_size); weights_ptr += w_hh_size;
+    std::span<const _Float16> bias_lstm(weights_ptr, bias_size); weights_ptr += bias_size;
+    std::span<const _Float16> W_dense(weights_ptr, dense_w_size); weights_ptr += dense_w_size;
+    std::span<const _Float16> b_dense(weights_ptr, dense_b_size); weights_ptr += dense_b_size; 
 
     LSTM::LSTMCell lstm_cell(input_dim ,hidden_dim , w_ih, w_hh, bias_lstm);
 
-    std::vector<float> h(hidden_dim, 0.0f);
-    std::vector<float> c(hidden_dim, 0.0f);
-    std::vector<float> dummy_noisy_signal(sequence_len * input_dim, 0.5f);
+    std::vector<_Float16> h(hidden_dim, static_cast<_Float16>(0.0f));
+    std::vector<_Float16> c(hidden_dim, static_cast<_Float16>(0.0f));
+    std::vector<_Float16> dummy_noisy_signal(sequence_len * input_dim, static_cast<_Float16>(0.5f));
 
     for(size_t t = 0; t < sequence_len; t++){
 
-        std::span<const float> x_t(dummy_noisy_signal.data() + (t * input_dim), input_dim);
+        std::span<const _Float16> x_t(dummy_noisy_signal.data() + (t * input_dim), input_dim);
 
         lstm_cell.step(x_t, h, c);
 
     }   
 
-    std::vector<float> final_logits(input_dim, 0.0f);
+    std::vector<_Float16> final_logits(input_dim, static_cast<_Float16>(0.0f));
     LSTM::TensorView2D dense_view(W_dense, hidden_dim, input_dim);
     LSTM::matmul_vec(dense_view, h,b_dense, final_logits);
 
@@ -60,8 +60,8 @@ int main(){
 
     //Verify output logits match Python
     for(size_t i = 0; i < input_dim; i++){
-        float diff = std::abs(final_logits[i] - python_expected[i]);
-        if(diff > 1e-3f){
+        float diff = std::abs(static_cast<float>(final_logits[i]) - python_expected[i]);
+        if(diff > 1e-2f){
             std::cout << "[ERROR] LSTM Forward Propagation failed! Expected: " << python_expected[i] 
                       << ", Got: " << final_logits[i] << std::endl;
             return -1;

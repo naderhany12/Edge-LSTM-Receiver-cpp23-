@@ -12,21 +12,21 @@ namespace LSTM {
 
         TensorView2D W_ih_;
         TensorView2D W_hh_;
-        std::span<const float> bias_;
+        std::span<const _Float16> bias_;
 
-        std::vector<float> gates_buf_;
+        std::vector<_Float16> gates_buf_;
 
 
     public :
         LSTMCell(size_t input_dim, size_t hidden_dim, 
-            std::span<const float> W_ih, std::span<const float> W_hh, std::span<const float> bias) :
+            std::span<const _Float16> W_ih, std::span<const _Float16> W_hh, std::span<const _Float16> bias) :
             input_dim_(input_dim), hidden_dim_(hidden_dim),
             W_ih_(W_ih, input_dim, 4 * hidden_dim), W_hh_(W_hh, hidden_dim, 4 * hidden_dim),
             bias_(bias), gates_buf_(4 * hidden_dim)
         {}
 
         
-            void step(std::span<const float> x_t, std::span<float> h, std::span<float> c){
+            void step(std::span<const _Float16> x_t, std::span<_Float16> h, std::span<_Float16> c){
                 // input gate
                 matmul_vec(W_ih_, x_t, bias_, gates_buf_ , false);
                 
@@ -37,15 +37,15 @@ namespace LSTM {
                 //Apply activation function
                 for(size_t i = 0; i < hidden_dim_; i++){
                 
-                float g_in  = gates_buf_[i];
-                float g_f   = gates_buf_[i + hidden_dim_];
-                float g_c   = gates_buf_[i + 2 * hidden_dim_];
-                float g_out = gates_buf_[i + 3 * hidden_dim_];
+                _Float16 g_in  = gates_buf_[i];
+                _Float16 g_f   = gates_buf_[i + hidden_dim_];
+                _Float16 g_c   = gates_buf_[i + 2 * hidden_dim_];
+                _Float16 g_out = gates_buf_[i + 3 * hidden_dim_];
 
-                float in_gate     = sigmoid(g_in);
-                float forget_gate = sigmoid(g_f);
-                float cell_gate   = tanh_act(g_c);
-                float out_gate    = sigmoid(g_out);
+                _Float16 in_gate     = sigmoid(g_in);
+                _Float16 forget_gate = sigmoid(g_f);
+                _Float16 cell_gate   = tanh_act(g_c);
+                _Float16 out_gate    = sigmoid(g_out);
 
 
 
