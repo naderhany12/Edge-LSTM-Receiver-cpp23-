@@ -47,6 +47,7 @@ def run_evaluation():
 
     receiver = Receiver(HIDDEN_DIM, FEATURE_DIM)
 
+    # Dummy input to initialize weights shapes
     dummy_input = tf.zeros((1, SEQUENCE_LEN, FEATURE_DIM), dtype=tf.float32)
     _ = receiver(dummy_input)
     
