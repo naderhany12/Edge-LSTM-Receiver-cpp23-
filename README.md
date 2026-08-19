@@ -104,8 +104,7 @@ Verifying LSTM Forward Propagation
 
 ### 3. Run Pure Inference Performance Engine
 ```bash
-cmake --build build --target LSTM_Edge_Inference
-qemu-riscv64 -L /usr/riscv64-linux-gnu -cpu max build/LSTM_Edge_Inference
+python python/evaluate_receiver.py
 ```
 === Python Keras Reference Output ===
 Raw Output Logits : [-0.23607 -7.46501  0.88881  1.50091]
