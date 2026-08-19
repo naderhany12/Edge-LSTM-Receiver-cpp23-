@@ -63,11 +63,11 @@ Engineers often evaluate compiler flag efficiency vs hardware SIMD gains. Below 
 
 | Optimization Level | Scalar Baseline (Code Size / Latency) | RVV FP32 (Code Size / Latency) | RVV FP16 - Zvfh (Code Size / Latency) | Target Use Case Focus |
 | :--- | :--- | :--- | :--- | :--- |
-| **`-O0`** | 28 KB / 4068 us | 30.1 KB / 5643 us | 35.6 KB / 5297 us * | Unoptimized Debug Mode |
-| **`-O2`** | 9.47 KB / 1301 us | 9.3 KB / 1288 us | 9.5 KB / 1287 us * | Production Balance |
-| **`-O3`** | 10.3 KB / 1446 us | 9.95 KB / 1253 us | 10 KB / 1387 us * | Maximum Aggressive Speed |
-| **`-Os`** | 7.35 KB / 908 us | 8.4 KB / 1322 us | 8.7 KB / 1508 us * | Space-Constrained Embedded |
-| **`-Ofast`** | 10.3 KB / 1368 us | 9.9 KB / 1146 us | 10 KB / 1534 us * | Aggressive Math / Lowest Latency |
+| **`-O0`** | 28 KB / 4068 us | 30.1 KB / 5643 us | 35.6 KB / 5297 us  | Unoptimized Debug Mode |
+| **`-O2`** | 9.47 KB / 1301 us | 9.3 KB / 1288 us | 9.5 KB / 1287 us  | Production Balance |
+| **`-O3`** | 10.3 KB / 1446 us | 9.95 KB / 1253 us | 10 KB / 1387 us  | Maximum Aggressive Speed |
+| **`-Os`** | 7.35 KB / 908 us | 8.4 KB / 1322 us | 8.7 KB / 1508 us  | Space-Constrained Embedded |
+| **`-Ofast`** | 10.3 KB / 1368 us | 9.9 KB / 1146 us | 10 KB / 1534 us  | Aggressive Math / Lowest Latency |
 
 ### Key Takeaways for README
 * **Best Overall Performance (RVV FP32):** `-Ofast` with RVV FP32 yields the overall lowest latency at 1146 us.
