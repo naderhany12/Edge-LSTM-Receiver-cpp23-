@@ -1,0 +1,18 @@
+==================================================
+  Pilot-Based Adaptation Scheme for Tx B          
+==================================================
+[SUCCESS] Pre-trained Rx weights loaded (1412 float32 parameters)
+
+[STEP 1] Zero-Shot BER on Payload Data : 54.09% (Distorted Channel!)
+
+[STEP 2] Running Rapid Adaptation on 100 Pilot Sequences (50 Epochs)...
+  Pilot Epoch  1/50 | Loss: 2.4013 | Pilot BER: 53.35%
+  Pilot Epoch 10/50 | Loss: 0.2426 | Pilot BER: 9.18%
+  Pilot Epoch 20/50 | Loss: 0.0941 | Pilot BER: 1.78%
+  Pilot Epoch 30/50 | Loss: 0.0524 | Pilot BER: 0.68%
+  Pilot Epoch 40/50 | Loss: 0.0379 | Pilot BER: 0.68%
+  Pilot Epoch 50/50 | Loss: 0.0255 | Pilot BER: 0.18%
+
+[STEP 3] Final Adapted BER on Payload Data : 0.26%
+
+[SUCCESS] Adapted Tx B weights exported to: model_weights/lstm_signal_weights_txB.bin
