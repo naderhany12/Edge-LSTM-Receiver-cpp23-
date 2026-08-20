@@ -4,10 +4,10 @@
 | Opt Level  | Code Size (.text)  | Pure Latency (us)  |
 | Auto-Vectorized |                    |                    |
 |------------|--------------------|--------------------|
-| -O0        | 27968 Bytes        | 4068 us            |
-| -O2        | 9475 Bytes         | 1301 us            |
-| -O3        | 10338 Bytes        | 1446 us            |
-| -Os        | 7348 Bytes         | 908 us             |
-| -Ofast     | 10306 Bytes        | 1368 us            |
+| -O0        | 32040 Bytes        | 4421 us            |
+| -O2        | 9939 Bytes         | 1251 us            |
+| -O3        | 10835 Bytes        | 1381 us            |
+| -Os        | 8108 Bytes         | 830 us             |
+| -Ofast     | 10799 Bytes        | 1388 us            |
 [0;36m====================================================[0m
 
