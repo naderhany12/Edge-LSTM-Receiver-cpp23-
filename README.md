@@ -104,9 +104,14 @@ Verifying LSTM Forward Propagation
 
 ### 3. Run Pure Inference Performance Engine
 ```bash
+# Build the C++23 inference engine
 cmake --build build
+
+# Run inference with default weights (Baseline Tx A)
 ./build/LSTM_Edge_Inference
-./build/LSTM_Edge_Inference model_weights/lstm_signal_weights_txB.bin 
+
+# Run inference with adapted weights for unseen Transmitter B
+./build/LSTM_Edge_Inference model_weights/lstm_signal_weights_txB.bin
 ```
 === Python Keras Reference Output ===
 Raw Output Logits : [-0.23607 -7.46501  0.88881  1.50091]
@@ -133,12 +138,16 @@ Edge-LSTM-Receiver-cpp23/
 ├── model_weights/
 │   └── lstm_signal_weights.bin     # Exported float32 binary weights from Golden Model
 ├── python/
-│   ├── evaluate_receiver.py        # Python script for BER and accuracy testing
+│   ├── evaluate_receiver.py        # Generates Golden Reference outputs for C++ inference verification
 │   ├── export_weights.py           # Dumps Keras model weights to float32 binary format
+    ├── fine_tune_transmitter_B.py  # Receiver domain adaptation script for unseen Transmitter B
 │   ├── models.py                   # Keras Autoencoder, Receiver, and Channel definitions
 │   └── train_autoencoder.py        # End-to-end Autoencoder training pipeline
+|
 ├── reports/
-│   └── rvv_optimization_sweep.txt  # Compiler optimization sweep logs & SIMD performance matrix
+|   ├── fine_tune_report.txt        # Domain Adaptation log: Pilot-assisted fine-tuning on unseen Tx B
+│   ├── rvv_optimization_sweep.txt  # Compiler optimization sweep logs & SIMD performance matrix
+|   └── training_report.txt         # Baseline Autoencoder training log: End-to-end training on Tx A
 ├── scripts/
 │   └── optimization_sweep.sh       # Automated bash script for running compiler benchmarks
 ├── src/
