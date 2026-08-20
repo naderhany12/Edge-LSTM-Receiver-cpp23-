@@ -142,7 +142,7 @@ Edge-LSTM-Receiver-cpp23/
 ├── include/LSTM/
 │   ├── activations.hpp               # Zero-allocation Activation Functions (Sigmoid, Tanh)
 │   ├── lstm_cell.hpp                 # Bare-Metal C++23 LSTM Cell Engine & Layer Execution
-    ├── on_device_adaptation.hpp      # Real-time C++ Adam Optimizer & Pilot Adaptation Engine 
+|   ├── on_device_adaptation.hpp      # Real-time C++ Adam Optimizer & Pilot Adaptation Engine 
 │   ├── tensor_view.hpp               # Lightweight zero-copy std::span Tensor abstraction
 │   └── utils.hpp                     # Helper utilities for data loading and memory operations
 ├── model_weights/
@@ -150,13 +150,11 @@ Edge-LSTM-Receiver-cpp23/
 ├── python/
 │   ├── evaluate_receiver.py          # Generates Golden Reference outputs for C++ inference verification
 │   ├── export_weights.py             # Dumps Keras model weights to float32 binary format
-|   ├── fine_tune_transmitter_B.py    # Receiver domain adaptation script for unseen Transmitter B
 │   ├── models.py                     # Keras Autoencoder, Receiver, and Channel definitions
 │   └── train_autoencoder.py          # End-to-end Autoencoder training pipeline
 |
 ├── reports/
-    ├── fine_tune_on_device.txt       # C++ On-device adaptation metrics: BER convergence & latency logs
-|   ├── fine_tune_report(python).txt  # Domain Adaptation log: Pilot-assisted fine-tuning on unseen Tx B
+|   ├── fine_tune_on_device.txt       # C++ On-device adaptation metrics: BER convergence & latency logs
 │   ├── rvv_optimization_sweep.txt    # Compiler optimization sweep logs & SIMD performance matrix
 |   └── training_report.txt           # Baseline Autoencoder training log: End-to-end training on Tx A
 ├── scripts/
