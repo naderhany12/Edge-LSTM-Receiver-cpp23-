@@ -140,7 +140,7 @@ Edge-LSTM-Receiver-cpp23/
 ├── python/
 │   ├── evaluate_receiver.py        # Generates Golden Reference outputs for C++ inference verification
 │   ├── export_weights.py           # Dumps Keras model weights to float32 binary format
-    ├── fine_tune_transmitter_B.py  # Receiver domain adaptation script for unseen Transmitter B
+|   ├── fine_tune_transmitter_B.py  # Receiver domain adaptation script for unseen Transmitter B
 │   ├── models.py                   # Keras Autoencoder, Receiver, and Channel definitions
 │   └── train_autoencoder.py        # End-to-end Autoencoder training pipeline
 |
