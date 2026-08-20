@@ -1,12 +1,26 @@
-Epoch 0/500 - Loss: 0.6993 - BER: 0.521575
-Epoch 50/500 - Loss: 0.4132 - BER: 0.100775
-Epoch 100/500 - Loss: 0.2060 - BER: 0.028575
-Epoch 150/500 - Loss: 0.0985 - BER: 0.002175
-Epoch 200/500 - Loss: 0.0629 - BER: 0.001775
-Epoch 250/500 - Loss: 0.0457 - BER: 0.001400
-Epoch 300/500 - Loss: 0.0360 - BER: 0.001475
-Epoch 350/500 - Loss: 0.0293 - BER: 0.001000
-Epoch 400/500 - Loss: 0.0244 - BER: 0.001125
-Epoch 450/500 - Loss: 0.0205 - BER: 0.001300
+===================================================================
+ Autoencoder Pre-Training Report (Dynamic AWGN + Distortion)
+===================================================================
 
-Final Test BER: 0.001037 (0.10%)
+[INFO] Architecture: End-to-End Neural Transceiver
+[INFO] Latent Space Dimension: HIDDEN_DIM = 16
+[INFO] Training Strategy: Graph-Accelerated Dynamic Dataset Generation
+[INFO] Channel Impairments: Multi-SNR Dynamic AWGN (3 dB to 12 dB)
+
+-------------------------------------------------------------------
+1. TRAINING CONVERGENCE PROGRESS
+-------------------------------------------------------------------
+  Epoch   1/400 | Loss: 0.5025 | Validation BER: 1.47%
+  Epoch  50/400 | Loss: 0.0190 | Validation BER: 0.09%
+  Epoch 100/400 | Loss: 0.0166 | Validation BER: 0.11%
+  Epoch 200/400 | Loss: 0.0172 | Validation BER: 0.08%
+  Epoch 400/400 | Loss: 0.0111 | Validation BER: 0.06%
+
+-------------------------------------------------------------------
+2. FINAL BASE MODEL METRICS
+-------------------------------------------------------------------
+ - Final Base Model Validation BER : 0.081%
+ - Weights Binary Export Status     : SUCCESS (model_weights/lstm_signal_weights.bin)
+ - Deployment Target               : C++23 On-Device Micro-Adam Engine
+
+===================================================================
