@@ -1,0 +1,12 @@
+Epoch 0/500 - Loss: 0.6993 - BER: 0.521575
+Epoch 50/500 - Loss: 0.4132 - BER: 0.100775
+Epoch 100/500 - Loss: 0.2060 - BER: 0.028575
+Epoch 150/500 - Loss: 0.0985 - BER: 0.002175
+Epoch 200/500 - Loss: 0.0629 - BER: 0.001775
+Epoch 250/500 - Loss: 0.0457 - BER: 0.001400
+Epoch 300/500 - Loss: 0.0360 - BER: 0.001475
+Epoch 350/500 - Loss: 0.0293 - BER: 0.001000
+Epoch 400/500 - Loss: 0.0244 - BER: 0.001125
+Epoch 450/500 - Loss: 0.0205 - BER: 0.001300
+
+Final Test BER: 0.001037 (0.10%)
