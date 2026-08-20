@@ -15,13 +15,15 @@ constexpr size_t HIDDEN_DIM = 16;
 constexpr size_t SEQUENCE_LEN = 10;
 constexpr size_t NUM_PILOT_SEQUENCES = 100;    // 400 Pilot Bits
 constexpr size_t NUM_PAYLOAD_SEQUENCES = 1000;  // 4000 Payload Bits
-constexpr size_t ADAPTATION_EPOCHS = 60;
-constexpr float LEARNING_RATE = 0.05f;
+constexpr size_t ADAPTATION_EPOCHS = 20;
+constexpr float LEARNING_RATE = 0.02f;
+constexpr float sigma = 0.35f;
+
 
 void generate_txB_frame(size_t num_sequences, std::vector<float>& noisy_signals, std::vector<float>& target_bits) {
     std::mt19937 gen(42);
     std::uniform_real_distribution<float> bit_dist(0.0f, 1.0f);
-    std::normal_distribution<float> noise_dist(0.0f, 0.35f);
+    std::normal_distribution<float> noise_dist(0.0f, sigma);
 
     noisy_signals.resize(num_sequences * SEQUENCE_LEN * INPUT_DIM);
     target_bits.resize(num_sequences * INPUT_DIM);
@@ -113,7 +115,11 @@ int main() {
     float zero_shot_ber = calculate_dataset_ber(lstm_cell, W_dense, b_dense, payload_signals, payload_targets, NUM_PAYLOAD_SEQUENCES);
     std::cout << "\n[STEP 1] Zero-Shot Payload BER: " << zero_shot_ber << "%" << std::endl;
 
-    std::cout << "\n[STEP 2] Running Rapid On-Device Adaptation..." << std::endl;
+    std::cout << "\n[STEP 2] Running Rapid On-Device Adaptation at σ = " << sigma << "..." << std::endl;
+
+
+    LSTM::AdamState adam_opt(HIDDEN_DIM, INPUT_DIM);
+
     auto adapt_start = std::chrono::high_resolution_clock::now();
 
     for (size_t epoch = 1; epoch <= ADAPTATION_EPOCHS; ++epoch) {
@@ -130,7 +136,7 @@ int main() {
             }
 
             std::span<const float> y_true(seq_target_ptr, INPUT_DIM);
-            LSTM::on_device_adaptation(h, y_true, W_dense, b_dense, HIDDEN_DIM, INPUT_DIM, LEARNING_RATE);
+            LSTM::on_device_adaptation(h, y_true, W_dense, b_dense, adam_opt, HIDDEN_DIM, INPUT_DIM, LEARNING_RATE);
         }
 
         if (epoch % 10 == 0 || epoch == 1) {
