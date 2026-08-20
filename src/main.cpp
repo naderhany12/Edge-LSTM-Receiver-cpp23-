@@ -8,8 +8,8 @@
 #include "LSTM/tensor_view.hpp"
 #include "LSTM/lstm_cell.hpp"
 
-int main(){
-    std::cout << "Intializing C++23 Neural Receiver Engine" << std::endl;
+int main(int argc, char* argv[]){
+    std::cout << "Initializing C++23 Neural Receiver Engine (RVV FP16 Optimized)" << std::endl;
 
     //Hyperparameters
     size_t input_dim = 4;
@@ -18,6 +18,11 @@ int main(){
 
     //Load weights
     std::string weights_path = "model_weights/lstm_signal_weights.bin";
+
+    if (argc > 1) {
+        weights_path = argv[1];
+    }
+    std::cout << "[INFO] Target Model Weights File: " << weights_path << std::endl;
 
     std::vector<_Float16> weights_buf = LSTM::load_binary_weights_fp16(weights_path);
 
