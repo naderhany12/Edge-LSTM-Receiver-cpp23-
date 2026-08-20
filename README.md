@@ -104,7 +104,9 @@ Verifying LSTM Forward Propagation
 
 ### 3. Run Pure Inference Performance Engine
 ```bash
-python python/evaluate_receiver.py
+cmake --build build
+./build/LSTM_Edge_Inference
+./build/LSTM_Edge_Inference model_weights/lstm_signal_weights_txB.bin 
 ```
 === Python Keras Reference Output ===
 Raw Output Logits : [-0.23607 -7.46501  0.88881  1.50091]
