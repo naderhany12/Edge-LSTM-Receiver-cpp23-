@@ -63,15 +63,15 @@ Engineers often evaluate compiler flag efficiency vs hardware SIMD gains. Below 
 
 | Optimization Level | Scalar Baseline (Code Size / Latency) | RVV FP32 (Code Size / Latency) | RVV FP16 - Zvfh (Code Size / Latency) | Target Use Case Focus |
 | :--- | :--- | :--- | :--- | :--- |
-| **`-O0`** | 28 KB / 4068 us | 30.1 KB / 5643 us | 35.6 KB / 5297 us  | Unoptimized Debug Mode |
-| **`-O2`** | 9.47 KB / 1301 us | 9.3 KB / 1288 us | 9.5 KB / 1287 us  | Production Balance |
-| **`-O3`** | 10.3 KB / 1446 us | 9.95 KB / 1253 us | 10 KB / 1387 us  | Maximum Aggressive Speed |
-| **`-Os`** | 7.35 KB / 908 us | 8.4 KB / 1322 us | 8.7 KB / 1508 us  | Space-Constrained Embedded |
-| **`-Ofast`** | 10.3 KB / 1368 us | 9.9 KB / 1146 us | 10 KB / 1534 us  | Aggressive Math / Lowest Latency |
+| **`-O0`** | 32 KB / 4421 us | 35 KB / 5455 us | 39.8 KB / 5453 us  | Unoptimized Debug Mode |
+| **`-O2`** | 9.9 KB / 1251 us | 9.8 KB / 1193 us | 10 KB / 1292 us  | Production Balance |
+| **`-O3`** | 10.8 KB / 1381 us | 10.4 KB / 1189 us | 10.5 KB / 1406 us  | Maximum Aggressive Speed |
+| **`-Os`** | 8.1 KB / 830 us | 9.2 KB / 1289 us | 9.5 KB / 1429 us  | Space-Constrained Embedded |
+| **`-Ofast`** | 10.8 KB / 1388 us | 10.4 KB / 1162 us | 10556 KB / 1449 us  | Aggressive Math / Lowest Latency |
 
 ### Key Takeaways for README
-* **Best Overall Performance (RVV FP32):** `-Ofast` with RVV FP32 yields the overall lowest latency at 1146 us.
-* **Best Code Size & Scalar Latency (-Os):** The scalar engine achieves its peak performance at -Os (7.35 KB binary size and 908 us latency).
+* **Best Overall Performance (RVV FP32):** `-Ofast` with RVV FP32 yields the overall lowest latency at 1162 us.
+* **Best Code Size & Scalar Latency (-Os):** The scalar engine achieves its peak performance at -Os (8.1 KB binary size and 830 us latency).
 * **FP16 / Zvfh Emulation Overhead:** Moving to FP16 reduces precision but incurs higher latency across -O3, -Os, and -Ofast due to runtime instruction casting and disassembly overheads during QEMU vector emulation.
 
 > ** Architectural Note on QEMU Emulation vs Real Silicon:**
