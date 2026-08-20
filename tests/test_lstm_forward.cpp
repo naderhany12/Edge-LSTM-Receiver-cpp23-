@@ -56,7 +56,7 @@ int main(){
     LSTM::matmul_vec(dense_view, h,b_dense, final_logits);
 
      // Python Ground Truth Logits
-    std::vector<float> python_expected = {-0.236075f, -7.46501f, 0.888805f, 1.50091f};
+    std::vector<float> python_expected = {1.27422f, -5.32105f, -6.78561f, 0.45544f};
 
     //Verify output logits match Python
     for(size_t i = 0; i < input_dim; i++){

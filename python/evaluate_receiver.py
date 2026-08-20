@@ -6,7 +6,7 @@ from models import Receiver
 SEQUENCE_LEN = 10
 FEATURE_DIM = 4
 HIDDEN_DIM = 16
-WEIGHTS_PATH = "../model_weights/lstm_signal_weights.bin"   
+WEIGHTS_PATH = "model_weights/lstm_signal_weights.bin"   
 
 def load_weights(filepath):
     if not os.path.exists(filepath):
