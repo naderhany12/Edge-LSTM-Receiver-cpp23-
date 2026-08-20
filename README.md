@@ -14,6 +14,7 @@ An ultra-low latency, zero-allocation C++23 Neural Network Inference Engine opti
 * **Zero-Allocation Hot Path:** Completely eliminates dynamic memory allocations (`malloc`/`new`) on hot inference paths using modern C++23 `std::span` views and stack buffers.
 * **Hardware Acceleration (RVV 1.0):** Hand-crafted Matrix-Vector Multiplication (`matmul_vec`) routines accelerated via RISC-V Vector Intrinsics using `vfmacc_vf` (Fused Multiply-Accumulate) for continuous memory throughput.
 * **Universal Receiver Adaptation:** Achieves a **0.1% Bit Error Rate (BER)**. Built on an end-to-end Autoencoder topology where the LSTM receiver fine-tunes with minimal training to adapt to any transmitter profile without new hardware.
+* **On-Device Adaptive Receiver:** Operates robustly across wide SNR ranges, achieving **0.025% BER** under clear channels ($\sigma = 0.20$) and maintaining **< 2.1% BER** under severe fading ($\sigma = 0.35$). Features a custom C++23 **Adam Optimizer** running Last-Layer fine-tuning with frozen base LSTM weights for ultra-fast pilot adaptation.
 * **Numerical Precision:** 100% Bit-accurate parity with PyTorch / TensorFlow Golden Reference logits ($< 10^{-3}$ tolerance).
 * **Architecture Branches:**
   * `main`: Full hardware-accelerated RVV engine like `feature/rvv-vectorization`.
@@ -25,6 +26,7 @@ An ultra-low latency, zero-allocation C++23 Neural Network Inference Engine opti
 ## Performance & Benchmarking Observations
 
 * **RVV Benchmarking:** Validated using QEMU emulation for RISC-V Vector (RVV 1.0) execution.
+* **SNR Stress Test Sweep:** Evaluated under severe fading and AWGN conditions ($\sigma = 0.20 \rightarrow 0.35$):High SNR ($\sigma = 0.20$): 0.025% BER (1 error in 4000 bits) at 19.53 ms.Moderate SNR ($\sigma = 0.28$): 0.55% BER at 15.84 ms.Low SNR / Stress ($\sigma = 0.35$): 2.05% BER at 15.28 ms (Well within standard Soft-Decision FEC limits).
 * **FP16 / Zvfh Trade-offs:** Benchmarked `float16` precision against the scalar/FP32 baseline. While reducing memory footprint, FP16 introduced slight latency degradation due to Zvfh instruction disassembly and casting overheads during emulation.
 ---
 
@@ -33,8 +35,8 @@ An ultra-low latency, zero-allocation C++23 Neural Network Inference Engine opti
 ###  System Architecture
 
 * **End-to-End Neural Autoencoder:** The system operates on a complete AI-driven autoencoder architecture, where the transmitter utilizes a neural model for signal encoding, and the receiver is powered by an optimized **LSTM network** for demodulation.
-* **Universal Hardware Adaptation:** Achieves a **0.1% Bit Error Rate (BER)**. The LSTM receiver easily adapts to unseen or varying transmitter profiles via lightweight **fine-tuning**, eliminating the need for dynamic hardware re-configurations.
-
+* **Modular Last-Layer Adaptation Engine:** To adapt to unseen transmitter impairments (Tx B) without retraining the entire network, the engine freezes the LSTM feature extractor and performs Backpropagation solely on the final classification layer using a custom C++23 Adam Optimizer.
+* **Universal Hardware Adaptation:** Maintains a < 0.1% Bit Error Rate (BER) on baseline configurations, and recovers signal lock from zero-shot failure on unseen transmitters (48.8% BER $\rightarrow$ 0.55% BER) in just 20 epochs ($\approx 15\text{ ms}$), eliminating dynamic hardware reconfiguration needs for 6G PHY receivers
 
 ### Dataflow
 ```text
@@ -102,7 +104,14 @@ Expected Output:
 Verifying LSTM Forward Propagation
 [PASS] Test Succeeded! Output matches Python Golden Reference.
 
-### 3. Run Pure Inference Performance Engine
+### 3. Run fine_tune test
+Execute the real-time C++23 on-device pilot adaptation engine to train on unseen transmitter impairments (Tx B) using C++ Adam Optimizer within ~14ms latency.
+```bash
+cmake --build build
+./build/tests/test_on_device_adaptation
+```
+
+### 4. Run Pure Inference Performance Engine
 ```bash
 # Build the C++23 inference engine
 cmake --build build
@@ -129,33 +138,36 @@ Status            : 100% Bit-Accurate Verification Success.
 ```text
 Edge-LSTM-Receiver-cpp23/
 ├── cmake/
-│   └── riscv64-toolchain.cmake     # CMake Toolchain configuration for RISC-V Cross-Compilation
+│   └── riscv64-toolchain.cmake       # CMake Toolchain configuration for RISC-V Cross-Compilation
 ├── include/LSTM/
-│   ├── activations.hpp             # Zero-allocation Activation Functions (Sigmoid, Tanh)
-│   ├── lstm_cell.hpp               # Bare-Metal C++23 LSTM Cell Engine & Layer Execution
-│   ├── tensor_view.hpp             # Lightweight zero-copy std::span Tensor abstraction
-│   └── utils.hpp                   # Helper utilities for data loading and memory operations
+│   ├── activations.hpp               # Zero-allocation Activation Functions (Sigmoid, Tanh)
+│   ├── lstm_cell.hpp                 # Bare-Metal C++23 LSTM Cell Engine & Layer Execution
+    ├── on_device_adaptation.hpp      # Real-time C++ Adam Optimizer & Pilot Adaptation Engine 
+│   ├── tensor_view.hpp               # Lightweight zero-copy std::span Tensor abstraction
+│   └── utils.hpp                     # Helper utilities for data loading and memory operations
 ├── model_weights/
-│   └── lstm_signal_weights.bin     # Exported float32 binary weights from Golden Model
+│   └── lstm_signal_weights.bin       # Exported float32 binary weights from Golden Model
 ├── python/
-│   ├── evaluate_receiver.py        # Generates Golden Reference outputs for C++ inference verification
-│   ├── export_weights.py           # Dumps Keras model weights to float32 binary format
-|   ├── fine_tune_transmitter_B.py  # Receiver domain adaptation script for unseen Transmitter B
-│   ├── models.py                   # Keras Autoencoder, Receiver, and Channel definitions
-│   └── train_autoencoder.py        # End-to-end Autoencoder training pipeline
+│   ├── evaluate_receiver.py          # Generates Golden Reference outputs for C++ inference verification
+│   ├── export_weights.py             # Dumps Keras model weights to float32 binary format
+|   ├── fine_tune_transmitter_B.py    # Receiver domain adaptation script for unseen Transmitter B
+│   ├── models.py                     # Keras Autoencoder, Receiver, and Channel definitions
+│   └── train_autoencoder.py          # End-to-end Autoencoder training pipeline
 |
 ├── reports/
-|   ├── fine_tune_report.txt        # Domain Adaptation log: Pilot-assisted fine-tuning on unseen Tx B
-│   ├── rvv_optimization_sweep.txt  # Compiler optimization sweep logs & SIMD performance matrix
-|   └── training_report.txt         # Baseline Autoencoder training log: End-to-end training on Tx A
+    ├── fine_tune_on_device.txt       # C++ On-device adaptation metrics: BER convergence & latency logs
+|   ├── fine_tune_report(python).txt  # Domain Adaptation log: Pilot-assisted fine-tuning on unseen Tx B
+│   ├── rvv_optimization_sweep.txt    # Compiler optimization sweep logs & SIMD performance matrix
+|   └── training_report.txt           # Baseline Autoencoder training log: End-to-end training on Tx A
 ├── scripts/
-│   └── optimization_sweep.sh       # Automated bash script for running compiler benchmarks
+│   └── optimization_sweep.sh         # Automated bash script for running compiler benchmarks
 ├── src/
-│   └── main.cpp                    # Pure Edge Inference Performance Benchmarking Engine
+│   └── main.cpp                      # Pure Edge Inference Performance Benchmarking Engine
 ├── tests/
-│   ├── CMakeLists.txt              # Unit test build system rules
-│   └── test_lstm_forward.cpp       # Bit-exact validation against Python reference outputs
-├── .gitignore                      # Git ignore rules for build artifacts and binaries
-├── CMakeLists.txt                  # Root CMake Build System Configuration
-├── LICENSE                         # Project License Terms
-└── README.md                       # Complete System Architecture & Documentation
+│   ├── CMakeLists.txt                # Unit test build system rules
+│   ├── test_lstm_forward.cpp         # Bit-exact validation against Python reference outputs
+    └── test_on_device_adaptation.cpp # Test suite for C++ Adam fine-tuning on unseen Tx B
+├── .gitignore                        # Git ignore rules for build artifacts and binaries
+├── CMakeLists.txt                    # Root CMake Build System Configuration
+├── LICENSE                           # Project License Terms
+└── README.md                         # Complete System Architecture & Documentation
