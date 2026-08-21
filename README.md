@@ -26,7 +26,7 @@ An ultra-low latency, zero-allocation C++23 Neural Network Inference Engine opti
 ## Performance & Benchmarking Observations
 
 * **RVV Benchmarking:** Validated using QEMU emulation for RISC-V Vector (RVV 1.0) execution.
-* **SNR Stress Test Sweep:** Evaluated under severe fading and AWGN conditions ($\sigma = 0.20 \rightarrow 0.35$):High SNR ($\sigma = 0.20$): 0.025% BER (1 error in 4000 bits) at 19.53 ms.Moderate SNR ($\sigma = 0.28$): 0.55% BER at 15.84 ms.Low SNR / Stress ($\sigma = 0.35$): 2.05% BER at 15.28 ms (Well within standard Soft-Decision FEC limits).
+* **SNR Stress Test Sweep:** Evaluated under severe fading and AWGN conditions ($\sigma = 0.20 \rightarrow 0.35$):High SNR ($\sigma = 0.20$): 0.05% BER (2 error in 4000 bits) at 14.65 ms.Moderate SNR ($\sigma = 0.28$): 0.525% BER at 14.66 ms.Low SNR / Stress ($\sigma = 0.35$): 2.1% BER at 15.84 ms (Well within standard Soft-Decision FEC limits).
 * **FP16 / Zvfh Trade-offs:** Benchmarked `float16` precision against the scalar/FP32 baseline. While reducing memory footprint, FP16 introduced slight latency degradation due to Zvfh instruction disassembly and casting overheads during emulation.
 ---
 
@@ -36,7 +36,7 @@ An ultra-low latency, zero-allocation C++23 Neural Network Inference Engine opti
 
 * **End-to-End Neural Autoencoder:** The system operates on a complete AI-driven autoencoder architecture, where the transmitter utilizes a neural model for signal encoding, and the receiver is powered by an optimized **LSTM network** for demodulation.
 * **Modular Last-Layer Adaptation Engine:** To adapt to unseen transmitter impairments (Tx B) without retraining the entire network, the engine freezes the LSTM feature extractor and performs Backpropagation solely on the final classification layer using a custom C++23 Adam Optimizer.
-* **Universal Hardware Adaptation:** Maintains a < 0.1% Bit Error Rate (BER) on baseline configurations, and recovers signal lock from zero-shot failure on unseen transmitters (48.8% BER $\rightarrow$ 0.55% BER) in just 20 epochs ($\approx 15\text{ ms}$), eliminating dynamic hardware reconfiguration needs for 6G PHY receivers
+* **Universal Hardware Adaptation:** Maintains a < 0.1% Bit Error Rate (BER) on baseline configurations, and recovers signal lock from zero-shot failure on unseen transmitters (48.8% BER $\rightarrow$ 0.525% BER) in just 20 epochs ($\approx 15\text{ ms}$), eliminating dynamic hardware reconfiguration needs for 6G PHY receivers
 
 ### Dataflow
 ```text

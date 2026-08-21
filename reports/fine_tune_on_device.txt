@@ -2,15 +2,15 @@
   C++23 Real-Time Wireless Pilot Adaptation Suite (Tx B)  
 ==========================================================
 
-[STEP 1] Zero-Shot Payload BER: 48.45%
+[STEP 1] Zero-Shot Payload BER: 49.025%
 
 [STEP 2] Running Rapid On-Device Adaptation at σ = 0.35...
-  C++ Pilot Epoch 1/20 | Pilot Dataset BER: 25%
-  C++ Pilot Epoch 10/20 | Pilot Dataset BER: 0.75%
-  C++ Pilot Epoch 20/20 | Pilot Dataset BER: 0.25%
+  C++ Pilot Epoch 1/20 | Pilot Dataset BER: 42%
+  C++ Pilot Epoch 10/20 | Pilot Dataset BER: 1.5%
+  C++ Pilot Epoch 20/20 | Pilot Dataset BER: 1.25%
 
-[STEP 3] Final Adapted Payload BER (4000 bits): 2.05%
-[PERFORMANCE] Total Adaptation Latency: 15282 us (15.282 ms)
+[STEP 3] Final Adapted Payload BER (4000 bits): 2.1%
+[PERFORMANCE] Total Adaptation Latency: 15839 us (15.839 ms)
 
 --------------------------------------------------------
 
@@ -18,15 +18,15 @@
   C++23 Real-Time Wireless Pilot Adaptation Suite (Tx B)  
 ==========================================================
 
-[STEP 1] Zero-Shot Payload BER: 48.825%
+[STEP 1] Zero-Shot Payload BER: 48.475%
 
 [STEP 2] Running Rapid On-Device Adaptation at σ = 0.28...
-  C++ Pilot Epoch 1/20 | Pilot Dataset BER: 23.5%
+  C++ Pilot Epoch 1/20 | Pilot Dataset BER: 40%
   C++ Pilot Epoch 10/20 | Pilot Dataset BER: 0.25%
   C++ Pilot Epoch 20/20 | Pilot Dataset BER: 0%
 
-[STEP 3] Final Adapted Payload BER (4000 bits): 0.55%
-[PERFORMANCE] Total Adaptation Latency: 15844 us (15.844 ms)
+[STEP 3] Final Adapted Payload BER (4000 bits): 0.525%
+[PERFORMANCE] Total Adaptation Latency: 14663 us (14.663 ms)
 
 --------------------------------------------------------
 
@@ -34,12 +34,12 @@
   C++23 Real-Time Wireless Pilot Adaptation Suite (Tx B)  
 ==========================================================
 
-[STEP 1] Zero-Shot Payload BER: 48.825%
+[STEP 1] Zero-Shot Payload BER: 47.825%
 
 [STEP 2] Running Rapid On-Device Adaptation at σ = 0.2...
-  C++ Pilot Epoch 1/20 | Pilot Dataset BER: 21.75%
+  C++ Pilot Epoch 1/20 | Pilot Dataset BER: 37.75%
   C++ Pilot Epoch 10/20 | Pilot Dataset BER: 0%
   C++ Pilot Epoch 20/20 | Pilot Dataset BER: 0%
 
-[STEP 3] Final Adapted Payload BER (4000 bits): 0.025%
-[PERFORMANCE] Total Adaptation Latency: 19536 us (19.536 ms)
+[STEP 3] Final Adapted Payload BER (4000 bits): 0.05%
+[PERFORMANCE] Total Adaptation Latency: 14654 us (14.654 ms)
