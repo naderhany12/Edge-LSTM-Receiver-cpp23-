@@ -117,14 +117,8 @@ cmake --build build
 
 ### 4. Run Pure Inference Performance Engine
 ```bash
-# Build the C++23 inference engine
 cmake --build build
-
-# Run inference with default weights (Baseline Tx A)
 ./build/LSTM_Edge_Inference
-
-# Run inference with adapted weights for unseen Transmitter B
-./build/LSTM_Edge_Inference model_weights/lstm_signal_weights_txB.bin
 ```
 === Python Keras Reference Output ===
 Raw Output Logits : [1.27422 -5.32105  -6.78561  0.45544]
