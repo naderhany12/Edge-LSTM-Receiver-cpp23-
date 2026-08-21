@@ -14,19 +14,23 @@ An ultra-low latency, zero-allocation C++23 Neural Network Inference Engine opti
 * **Zero-Allocation Hot Path:** Completely eliminates dynamic memory allocations (`malloc`/`new`) on hot inference paths using modern C++23 `std::span` views and stack buffers.
 * **Hardware Acceleration (RVV 1.0):** Hand-crafted Matrix-Vector Multiplication (`matmul_vec`) routines accelerated via RISC-V Vector Intrinsics using `vfmacc_vf` (Fused Multiply-Accumulate) for continuous memory throughput.
 * **Universal Receiver Adaptation:** Achieves a **0.1% Bit Error Rate (BER)**. Built on an end-to-end Autoencoder topology where the LSTM receiver fine-tunes with minimal training to adapt to any transmitter profile without new hardware.
-* **On-Device Adaptive Receiver:** Operates robustly across wide SNR ranges, achieving **0.025% BER** under clear channels ($\sigma = 0.20$) and maintaining **< 2.1% BER** under severe fading ($\sigma = 0.35$). Features a custom C++23 **Adam Optimizer** running Last-Layer fine-tuning with frozen base LSTM weights for ultra-fast pilot adaptation.
+* **On-Device Adaptive Receiver:** Operates robustly across wide SNR ranges, achieving **0.05% BER** under clear channels ($\sigma = 0.20$) and maintaining **< 2.1% BER** under severe fading ($\sigma = 0.35$). Features a custom C++23 **Adam Optimizer** running Last-Layer fine-tuning with frozen base LSTM weights for ultra-fast pilot adaptation.
 * **Numerical Precision:** 100% Bit-accurate parity with PyTorch / TensorFlow Golden Reference logits ($< 10^{-3}$ tolerance).
 * **Architecture Branches:**
-  * `main`: Full hardware-accelerated RVV engine like `feature/rvv-vectorization`.
-  * `experiment/fp16-zvfh-emulation`: FP16 precision bench using Zvfh intrinsics (higher latency due to instruction casting/emulation overhead).
-  * `scalar-baseline`: Portable C++23 Scalar engine for cross-architectural benchmarking.
+  * **`main`**: Full system integration branch. Combines the hardware-accelerated RVV FP32 engine with the online receiver adaptation test pipeline (real-time Micro-Adam fine-tuning).
+  * **`feature/rvv-vectorization`**: Pure inference-focused branch featuring the optimized C++ engine vectorized for FP32 using RISC-V Vector Extensions (RVV 1.0) intrinsics.
+  * **`experiment/fp16-zvfh-emulation`**: Evaluates FP16 precision using `Zvfh` vector intrinsics (analyzing performance & emulation/casting overheads).
+  * **`scalar-baseline`**: Highly optimized portable C++23 reference implementation without vector extensions, used for cross-architectural baseline comparisons.
 
 ---
 
 ## Performance & Benchmarking Observations
 
 * **RVV Benchmarking:** Validated using QEMU emulation for RISC-V Vector (RVV 1.0) execution.
-* **SNR Stress Test Sweep:** Evaluated under severe fading and AWGN conditions ($\sigma = 0.20 \rightarrow 0.35$):High SNR ($\sigma = 0.20$): 0.05% BER (2 error in 4000 bits) at 14.65 ms.Moderate SNR ($\sigma = 0.28$): 0.525% BER at 14.66 ms.Low SNR / Stress ($\sigma = 0.35$): 2.1% BER at 15.84 ms (Well within standard Soft-Decision FEC limits).
+* **SNR Stress Test Sweep**: Evaluated under severe fading and AWGN conditions ($\sigma = 0.28 \rightarrow 0.35$):
+  * **Moderate SNR ($\sigma = 0.28$)**: 0.525% BER at 14.66 ms.
+  * **Low SNR / Stress ($\sigma = 0.35$)**: 2.10% BER at 15.84 ms (Well within standard Soft-Decision FEC limits).
+  * **Theoretical Bayes Limit Comparison**: Under extreme noise ($\sigma = 0.35$, signal amplitude $A = 0.75$), the absolute theoretical minimum error rate (irreducible Bayes bound) is given by $P_e = Q(A / \sigma) = Q(0.75 / 0.35) \approx$ **1.606%**. The adapted C++23 Edge-LSTM Engine operates at an exceptionally tight **~0.49% sub-optimality gap** from this optimal boundary without prior channel knowledge.
 * **FP16 / Zvfh Trade-offs:** Benchmarked `float16` precision against the scalar/FP32 baseline. While reducing memory footprint, FP16 introduced slight latency degradation due to Zvfh instruction disassembly and casting overheads during emulation.
 ---
 
@@ -123,12 +127,12 @@ cmake --build build
 ./build/LSTM_Edge_Inference model_weights/lstm_signal_weights_txB.bin
 ```
 === Python Keras Reference Output ===
-Raw Output Logits : [-0.23607 -7.46501  0.88881  1.50091]
-Decoded Bits (>0) : [0 0 1 1]
+Raw Output Logits : [1.27422 -5.32105  -6.78561  0.45544]
+Decoded Bits (>0) : [1 0 0 1]
 
 === C++23 / RVV Engine Output ===
-Raw Output Logits : -0.236075 -7.46501 0.888805 1.50091 
-Decoded Bits (>0) : 0 0 1 1 
+Raw Output Logits : 1.27422 -5.32105  -6.78561  0.455444 
+Decoded Bits (>0) : 1 0 0 1 
 Status            : 100% Bit-Accurate Verification Success.
 
 ---
