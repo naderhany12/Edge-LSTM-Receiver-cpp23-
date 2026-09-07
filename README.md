@@ -91,14 +91,27 @@ Engineers often evaluate compiler flag efficiency vs hardware SIMD gains. Below 
 * CMake 3.22+
 * RISC-V 64-bit GNU Toolchain (`riscv64-linux-gnu-g++`)
 * QEMU RISC-V Emulator (`qemu-riscv64`)
+* Build Essentials (`build-essential`, `make`)
 
-### 1. Run Automated Multi-Flag Optimization Sweep
+
+### 1. Configure the Project (One-Time Setup)
+#### A. Native Build (Host x86_64)
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+```
+
+#### B. RISC-V Cross-Compilation (RV64GCV)
+```bash
+cmake -B build_rvv -DCMAKE_TOOLCHAIN_FILE=cmake/riscv64-toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+```
+
+### 2. Run Automated Multi-Flag Optimization Sweep
 Execute the automated benchmarking suite to compile across all optimization levels (`-O0`, `-O2`, `-O3`, `-Os`, `-Ofast`), measure binary footprint, and benchmark inference latencies:
 ```bash
 chmod +x scripts/optimization_sweep.sh
 ./scripts/optimization_sweep.sh
 ```
-### 2. Run Numerical Accuracy Unit Test
+### 3. Run Numerical Accuracy Unit Test
 ```bash
 cmake --build build_test_rvv
 qemu-riscv64 -L /usr/riscv64-linux-gnu -cpu max build_test_rvv/tests/test_lstm_forward
@@ -108,14 +121,14 @@ Expected Output:
 Verifying LSTM Forward Propagation
 [PASS] Test Succeeded! Output matches Python Golden Reference.
 
-### 3. Run fine_tune test
+### 4. Run fine_tune test
 Execute the real-time C++23 on-device pilot adaptation engine to train on unseen transmitter impairments (Tx B) using C++ Adam Optimizer within ~14ms latency.
 ```bash
 cmake --build build
 ./build/tests/test_on_device_adaptation
 ```
 
-### 4. Run Pure Inference Performance Engine
+### 5. Run Pure Inference Performance Engine
 ```bash
 cmake --build build
 ./build/LSTM_Edge_Inference
