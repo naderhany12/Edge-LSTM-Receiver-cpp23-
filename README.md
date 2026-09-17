@@ -40,7 +40,7 @@ An ultra-low latency, zero-allocation C++23 Neural Network Inference Engine opti
 
 * **End-to-End Neural Autoencoder:** The system operates on a complete AI-driven autoencoder architecture, where the transmitter utilizes a neural model for signal encoding, and the receiver is powered by an optimized **LSTM network** for demodulation.
 * **Modular Last-Layer Adaptation Engine:** To adapt to unseen transmitter impairments (Tx B) without retraining the entire network, the engine freezes the LSTM feature extractor and performs Backpropagation solely on the final classification layer using a custom C++23 Adam Optimizer.
-* **Universal Hardware Adaptation:** Maintains a < 0.1% Bit Error Rate (BER) on baseline configurations, and recovers signal lock from zero-shot failure on unseen transmitters (48.8% BER $\rightarrow$ 0.525% BER) in just 20 epochs ($\approx 15\text{ ms}$), eliminating dynamic hardware reconfiguration needs for 6G PHY receivers
+* **Universal Hardware Adaptation:** Maintains a < 0.1% Bit Error Rate (BER) on baseline configurations, and recovers signal lock from zero-shot failure on unseen transmitters (48.8% BER $\rightarrow$ 0.525% BER) in just 20 epochs ($\approx 707\text{ ms}$ on QEMU), eliminating dynamic hardware reconfiguration needs for 6G PHY receivers
 
 ### Dataflow
 ```text
@@ -122,7 +122,7 @@ Verifying LSTM Forward Propagation
 [PASS] Test Succeeded! Output matches Python Golden Reference.
 
 ### 4. Run fine_tune test
-Execute the real-time C++23 on-device pilot adaptation engine to train on unseen transmitter impairments (Tx B) using C++ Adam Optimizer within ~14ms latency.
+Execute the real-time C++23 on-device pilot adaptation engine to train on unseen transmitter impairments (Tx B) using C++ Adam Optimizer within ~707ms latency on QEMU.
 ```bash
 cmake --build build_rvv
 qemu-riscv64 -L /usr/riscv64-linux-gnu -cpu max build_rvv/tests/test_on_device_adaptation
