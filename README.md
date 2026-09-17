@@ -113,8 +113,8 @@ chmod +x scripts/optimization_sweep.sh
 ```
 ### 3. Run Numerical Accuracy Unit Test
 ```bash
-cmake --build build_test_rvv
-qemu-riscv64 -L /usr/riscv64-linux-gnu -cpu max build_test_rvv/tests/test_lstm_forward
+cmake --build build_rvv
+qemu-riscv64 -L /usr/riscv64-linux-gnu -cpu max build_rvv/tests/test_lstm_forward
 ```
 ‏
 Expected Output:
@@ -124,14 +124,14 @@ Verifying LSTM Forward Propagation
 ### 4. Run fine_tune test
 Execute the real-time C++23 on-device pilot adaptation engine to train on unseen transmitter impairments (Tx B) using C++ Adam Optimizer within ~14ms latency.
 ```bash
-cmake --build build
-./build/tests/test_on_device_adaptation
+cmake --build build_rvv
+qemu-riscv64 -L /usr/riscv64-linux-gnu -cpu max build_rvv/tests/test_on_device_adaptation
 ```
 
 ### 5. Run Pure Inference Performance Engine
 ```bash
-cmake --build build
-./build/LSTM_Edge_Inference
+cmake --build build_rvv
+qemu-riscv64 -L /usr/riscv64-linux-gnu -cpu max build_rvv/LSTM_Edge_Inference
 ```
 === Python Keras Reference Output ===
 Raw Output Logits : [1.27422 -5.32105  -6.78561  0.45544]

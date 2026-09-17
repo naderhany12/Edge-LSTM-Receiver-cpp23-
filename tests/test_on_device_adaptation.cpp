@@ -41,7 +41,7 @@ void generate_txB_frame(size_t num_sequences, std::vector<float>& noisy_signals,
         }
     }
 }
-
+template <size_t HIDDEN_DIM = 16, size_t INPUT_DIM = 4>
 float calculate_dataset_ber(
     LSTM::LSTMCell& lstm_cell,
     std::span<const float> W_dense,
@@ -54,9 +54,13 @@ float calculate_dataset_ber(
     size_t total_bits = num_sequences * INPUT_DIM;
     LSTM::TensorView2D dense_view(W_dense, HIDDEN_DIM, INPUT_DIM);
 
+    alignas(16) std::array<float, HIDDEN_DIM> h{};
+    alignas(16) std::array<float, HIDDEN_DIM> c{};
+    alignas(16) std::array<float, INPUT_DIM> logits{};
+
     for (size_t seq = 0; seq < num_sequences; ++seq) {
-        std::vector<float> h(HIDDEN_DIM, 0.0f);
-        std::vector<float> c(HIDDEN_DIM, 0.0f);
+        h.fill(0.0f);
+        c.fill(0.0f);
 
         const float* seq_signal_ptr = signals.data() + seq * (SEQUENCE_LEN * INPUT_DIM);
         const float* seq_target_ptr = targets.data() + seq * INPUT_DIM;
@@ -66,7 +70,7 @@ float calculate_dataset_ber(
             lstm_cell.step(x_t, h, c);
         }
 
-        std::vector<float> logits(INPUT_DIM, 0.0f);
+        logits.fill(0.0f);
         LSTM::matmul_vec(dense_view, h, b_dense, logits);
 
         for (size_t d = 0; d < INPUT_DIM; ++d) {
@@ -118,14 +122,18 @@ int main() {
     std::cout << "\n[STEP 2] Running Rapid On-Device Adaptation at σ = " << sigma << "..." << std::endl;
 
 
-    LSTM::AdamState adam_opt(HIDDEN_DIM, INPUT_DIM);
+    LSTM::AdamState<HIDDEN_DIM, INPUT_DIM> adam_opt;
+    adam_opt.reset();
+    
+    std::array<float, HIDDEN_DIM> h{};
+    std::array<float, HIDDEN_DIM> c{};
 
-    auto adapt_start = std::chrono::high_resolution_clock::now();
+    auto prod_start = std::chrono::high_resolution_clock::now();
 
     for (size_t epoch = 1; epoch <= ADAPTATION_EPOCHS; ++epoch) {
         for (size_t seq = 0; seq < NUM_PILOT_SEQUENCES; ++seq) {
-            std::vector<float> h(HIDDEN_DIM, 0.0f);
-            std::vector<float> c(HIDDEN_DIM, 0.0f);
+            h.fill(0.0f);
+            c.fill(0.0f);
 
             const float* seq_signal_ptr = pilot_signals.data() + seq * (SEQUENCE_LEN * INPUT_DIM);
             const float* seq_target_ptr = pilot_targets.data() + seq * INPUT_DIM;
@@ -136,22 +144,17 @@ int main() {
             }
 
             std::span<const float> y_true(seq_target_ptr, INPUT_DIM);
-            LSTM::on_device_adaptation(h, y_true, W_dense, b_dense, adam_opt, HIDDEN_DIM, INPUT_DIM, LEARNING_RATE);
-        }
-
-        if (epoch % 10 == 0 || epoch == 1) {
-            float pilot_ber = calculate_dataset_ber(lstm_cell, W_dense, b_dense, pilot_signals, pilot_targets, NUM_PILOT_SEQUENCES);
-            std::cout << "  C++ Pilot Epoch " << epoch << "/" << ADAPTATION_EPOCHS << " | Pilot Dataset BER: " << pilot_ber << "%" << std::endl;
+            LSTM::on_device_adaptation(h, y_true, W_dense, b_dense, adam_opt, LEARNING_RATE);
+        
         }
     }
-
-    auto adapt_end = std::chrono::high_resolution_clock::now();
-    auto adapt_duration = std::chrono::duration_cast<std::chrono::microseconds>(adapt_end - adapt_start).count();
+    auto prod_end = std::chrono::high_resolution_clock::now();
+    auto prod_duration = std::chrono::duration_cast<std::chrono::microseconds>(prod_end - prod_start).count();
 
     float final_payload_ber = calculate_dataset_ber(lstm_cell, W_dense, b_dense, payload_signals, payload_targets, NUM_PAYLOAD_SEQUENCES);
 
     std::cout << "\n[STEP 3] Final Adapted Payload BER (4000 bits): " << final_payload_ber << "%" << std::endl;
-    std::cout << "[PERFORMANCE] Total Adaptation Latency: " << adapt_duration << " us (" << static_cast<float>(adapt_duration) / 1000.0f << " ms)" << std::endl;
+    std::cout << "[PERFORMANCE] Total Adaptation Latency: " << prod_duration << " us (" << static_cast<float>(prod_duration) / 1000.0f << " ms)" << std::endl;
 
     return 0;
 }
